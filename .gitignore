@@ -1,2 +1,3 @@
 target/
 .serverless/
+dependency-reduced-pom.xml

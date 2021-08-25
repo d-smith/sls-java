@@ -1,13 +1,14 @@
-service: aws-java-simple-http-endpoint
+service: sls-java
 
 
 provider:
   name: aws
   runtime: java11
+  lambdaHashingVersion: "20201221"
   
 package:
   artifact: target/java-lambda-dev.jar
 
 functions:
-  currentTime:
+  sample:
     handler: com.ds.Handler
