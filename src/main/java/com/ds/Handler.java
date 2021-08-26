@@ -11,6 +11,11 @@ import java.util.Map;
 
 // Handler value: example.Handler
 public class Handler implements RequestHandler<Map<String,String>, String>{
+  
+  public Handler() {
+    System.out.println("It is constructed...");
+  }
+  
   Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @Override
   public String handleRequest(Map<String,String> event, Context context)
