@@ -9,11 +9,33 @@ import com.google.gson.GsonBuilder;
 
 import java.util.Map;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Set;
+
 // Handler value: example.Handler
 public class Handler implements RequestHandler<Map<String,String>, String>{
   
   public Handler() {
     System.out.println("It is constructed...");
+    
+    
+     try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
+       Properties prop = new Properties();
+
+            if (input == null) {
+                System.out.println("Sorry, unable to find " + "config.properties");
+                return;
+            }
+
+            prop.load(input);
+            prop.keySet().forEach(x -> System.out.println(x));
+     } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    
+    
   }
   
   Gson gson = new GsonBuilder().setPrettyPrinting().create();

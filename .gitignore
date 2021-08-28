@@ -2,3 +2,4 @@ target/
 .serverless/
 dependency-reduced-pom.xml
 kc.yml
+config.properties
