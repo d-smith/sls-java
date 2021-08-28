@@ -1,3 +1,4 @@
 target/
 .serverless/
 dependency-reduced-pom.xml
+kc.yml

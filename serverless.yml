@@ -5,10 +5,13 @@ provider:
   name: aws
   runtime: java11
   lambdaHashingVersion: "20201221"
-  
+
+
 package:
   artifact: target/java-lambda-dev.jar
 
 functions:
   sample:
     handler: com.ds.Handler
+    environment:
+      BOOTSTRAP_SERVERS: ${file(./kc.yml):bootstrap_servers} 
