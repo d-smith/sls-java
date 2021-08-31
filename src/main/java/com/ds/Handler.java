@@ -30,10 +30,16 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.apache.kafka.common.errors.TopicExistsException;
 
+import com.ds.DataRecord;
+
 
 
 // Handler value: example.Handler
 public class Handler implements RequestHandler<Map<String,String>, String>{
+  
+  private static final String TOPIC = "sample";
+  
+  Producer<String, DataRecord> producer;
   
   public static void createTopic(final String topic,
                           final Properties cloudConfig) {
@@ -61,9 +67,18 @@ public class Handler implements RequestHandler<Map<String,String>, String>{
             }
 
             props.load(input);
+            
+            // Add additional properties.
+            props.put(ProducerConfig.ACKS_CONFIG, "all");
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaJsonSerializer");
+    
+    
             props.keySet().forEach(x -> System.out.println(x));
             
-            createTopic("sample", props);
+            createTopic(TOPIC, props);
+            
+            producer = new KafkaProducer<String, DataRecord>(props);
             
      } catch (IOException ex) {
             ex.printStackTrace();
@@ -84,6 +99,22 @@ public class Handler implements RequestHandler<Map<String,String>, String>{
     // process event
     logger.log("EVENT: " + gson.toJson(event));
     logger.log("EVENT TYPE: " + event.getClass().toString());
+    
+    DataRecord record = new DataRecord(event.toString());
+
+      producer.send(new ProducerRecord<String, DataRecord>(TOPIC, null, record), new Callback() {
+          @Override
+          public void onCompletion(RecordMetadata m, Exception e) {
+            if (e != null) {
+              e.printStackTrace();
+            } else {
+              System.out.printf("Produced record to topic %s partition [%d] @ offset %d%n", m.topic(), m.partition(), m.offset());
+            }
+          }
+      });
+    
+     producer.flush();
+     
     return response;
   }
 }
