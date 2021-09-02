@@ -78,7 +78,10 @@ public class Handler implements RequestHandler<Map<String, String>, String> {
 
             props.keySet().forEach(x -> System.out.println(x));
 
-            createTopic(TOPIC, props);
+            if("true" == System.getenv("CREATE_TOPIC")) {
+                createTopic(TOPIC, props);
+            }
+
 
             producer = new KafkaProducer<String, DataRecord>(props);
 

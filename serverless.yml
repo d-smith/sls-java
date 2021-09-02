@@ -14,4 +14,4 @@ functions:
   sample:
     handler: com.ds.Handler
     environment:
-      BOOTSTRAP_SERVERS: ${file(./kc.yml):bootstrap_servers} 
+      CREATE_TOPIC: true

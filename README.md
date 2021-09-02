@@ -23,3 +23,9 @@ basic.auth.credentials.source=USER_INFO
 basic.auth.user.info={{ SR_API_KEY }}:{{ SR_API_SECRET }}
 ```
 
+Invoke
+
+```
+sls invoke --function sample --data '{"foo":"maybe"}'
+sls logs --function sample
+```
