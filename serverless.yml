@@ -14,4 +14,7 @@ functions:
   sample:
     handler: com.ds.Handler
     environment:
-      CREATE_TOPIC: true
+      CREATE_TOPIC: false
+
+  reader:
+    handler: com.ds.Reader
