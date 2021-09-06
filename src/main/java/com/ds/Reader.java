@@ -3,21 +3,20 @@ package com.ds;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
 public class Reader implements RequestHandler<Map<String, String>, String> {
 
-    private Consumer<Long, String> consumer;
+    private Consumer<String, DataRecord> consumer;
     private static final String TOPIC = "sample";
 
     public Reader() {
@@ -52,6 +51,14 @@ public class Reader implements RequestHandler<Map<String, String>, String> {
     public String handleRequest(Map<String, String> stringStringMap, Context context) {
         LambdaLogger logger = context.getLogger();
         logger.log("reader invoked");
+
+
+        ConsumerRecords<String,DataRecord> records = consumer.poll(Duration.ofMillis(10000));
+        for(ConsumerRecord<String,DataRecord> record: records) {
+            String details = "offset = %d, key = %s, value = %s\n".format(String.valueOf(record.offset()),record.key(), record.value());
+            logger.log(details);
+        }
+
         return "OK";
     }
 }

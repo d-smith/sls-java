@@ -18,3 +18,4 @@ functions:
 
   reader:
     handler: com.ds.Reader
+    timeout: 30
