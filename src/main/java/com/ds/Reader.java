@@ -3,6 +3,7 @@ package com.ds;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import io.confluent.kafka.serializers.KafkaJsonDeserializerConfig;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -35,7 +36,9 @@ public class Reader implements RequestHandler<Map<String, String>, String> {
 
             props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
             props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaJsonDeserializer");
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaExampleConsumer");
+            props.put(KafkaJsonDeserializerConfig.JSON_VALUE_TYPE, DataRecord.class);
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, "demo-consumer-lambda");
+            props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
             props.keySet().forEach(x -> System.out.println(x));
 
@@ -50,13 +53,17 @@ public class Reader implements RequestHandler<Map<String, String>, String> {
     @Override
     public String handleRequest(Map<String, String> stringStringMap, Context context) {
         LambdaLogger logger = context.getLogger();
-        logger.log("reader invoked");
+        logger.log("reader invoked\n");
 
 
+        logger.log("poll for records\n");
         ConsumerRecords<String,DataRecord> records = consumer.poll(Duration.ofMillis(10000));
+        logger.log("poll finished - iterate through results\n");
         for(ConsumerRecord<String,DataRecord> record: records) {
-            String details = "offset = %d, key = %s, value = %s\n".format(String.valueOf(record.offset()),record.key(), record.value());
-            logger.log(details);
+            logger.log("format details...\n");
+            String key = record.key();
+            DataRecord value = record.value();
+            logger.log("key is " + key + ", value is " + value + "\n");
         }
 
         return "OK";
